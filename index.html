@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Economic Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+
+    .data-container {
+      margin-top: 30px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    h2 {
+      color: #666;
+      margin: 10px 0;
+    }
+
+    .taxes-container {
+      margin-top: 50px;
+    }
+
+    .budget-container {
+      margin-top: 30px;
+    }
+
+    .expenditure-container {
+      margin-top: 30px;
+    }
+
+    .interest-container {
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Economic Simulator</h1>
+
+  <div class="data-container">
+    <h2>GDP: <span id="gdp"></span> billion</h2>
+    <h2>Per Capita Income: $<span id="per-capita-income"></span></h2>
+    <h2>Unemployment Rate: <span id="unemployment-rate"></span>%</h2>
+    <h2>Poverty Rate: <span id="poverty-rate"></span>%</h2>
+    <h2>Homeless Rate: <span id="homeless-rate"></span>%</h2>
+    <h2>Inflation Rate: <span id="inflation-rate"></span>%</h2>
+    <h2>National Debt: $<span id="national-debt"></span> billion</h2>
+  </div>
+
+  <div class="taxes-container">
+    <h2>Taxes: <input type="range" id="taxes-slider" min="0" max="60" value="0"> <span id="taxes-percent">0%</span></h2>
+  </div>
+
+  <div class="budget-container">
+    <h2>Budget: $<span id="budget"></span> trillion</h2>
+    <h2>Poverty Rate After Taxes: <span id="poverty-after-taxes"></span>%</h2>
+  </div>
+
+  <div class="expenditure-container">
+    <h2>Expenditure</h2>
+    <h3>Department of Treasury: $<input type="number" id="treasury-input" class="department-input" min="0"></h3>
+    <h3>Department of State: $<input type="number" id="state-input" class="department-input" min="0"></h3>
+    <h3>Department of Commerce: $<input type="number" id="commerce-input" class="department-input" min="0"></h3>
+    <h3>Federal Trade Commission: $<input type="number" id="ftc-input" class="department-input" min="0"></h3>
+    <h3>Department of Defense: $<input type="number" id="defense-input" class="department-input" min="0"></h3>
+    <h3>Department of the Interior: $<input type="number" id="interior-input" class="department-input" min="0"></h3>
+    <h3>Department of Labor: $<input type="number" id="labor-input" class="department-input" min="0"></h3>
+    <h3>Department of Education: $<input type="number" id="education-input" class="department-input" min="0"></h3>
+    <h3>Department of Health and Human Services: $<input type="range" id="health-input" class="department-input" min="0" max="60" value="0"> <span id="health-expenditure"></span> billion</h3>
+    <h3>Federal Bureau of Investigation: $<input type="number" id="fbi-input" class="department-input" min="0"></h3>
+    <h3>Food and Drug Administration: $<input type="number" id="fda-input" class="department-input" min="0"></h3>
+    <h3>National Aeronautics and Space Administration: $<input type="number" id="nasa-input" class="department-input" min="0"></h3>
+    <h3>Department of Transportation: $<input type="number" id="transportation-input" class="department-input" min="0"></h3>
+    <button id="calculate-expenditure">Calculate Total Expenditure</button>
+    <h2>Total Expenditure: $<span id="total-expenditure"></span> billion</h2>
+  </div>
+
+  <div class="interest-container">
+    <h2>Interest Rate: <span id="interest-rate"></span>%</h2>
+    <button id="raise-interest-rate">Raise Interest Rates</button>
+    <button id="lower-interest-rate">Lower Interest Rates</button>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Simulated economic data
+      const data = {
+        gdp: 10.93,
+        perCapitaIncome: 37997.76,
+        unemploymentRate: 6,
+        povertyRate: 12.1,
+        homelessRate: 0.9,
+        inflationRate: 1.58,
+        nationalDebt: 6228,
+        interestRate: 1.52,
+        expenditure: {
+          treasury: 0,
+          state: 0,
+          commerce: 0,
+          ftc: 0,
+          defense: 0,
+          interior: 0,
+          labor: 0,
+          education: 0,
+          health: 0,
+          fbi: 0,
+          fda: 0,
+          nasa: 0,
+          transportation: 0,
+        },
+      };
+
+      // Function to update the data values on the page
+      function updateDataValues() {
+        document.getElementById('gdp').textContent = data.gdp.toFixed(2);
+        document.getElementById('per-capita-income').textContent = data.perCapitaIncome.toFixed(2);
+        document.getElementById('unemployment-rate').textContent = data.unemploymentRate.toFixed(2);
+        document.getElementById('poverty-rate').textContent = data.povertyRate.toFixed(2);
+        document.getElementById('homeless-rate').textContent = data.homelessRate.toFixed(2);
+        document.getElementById('inflation-rate').textContent = data.inflationRate.toFixed(2);
+        document.getElementById('national-debt').textContent = data.nationalDebt.toFixed(2);
+      }
+
+      // Function to update the budget based on taxes
+      function updateBudget() {
+        const taxesSlider = document.getElementById('taxes-slider');
+        const taxesPercent = document.getElementById('taxes-percent');
+        const budget = document.getElementById('budget');
+        const povertyAfterTaxes = document.getElementById('poverty-after-taxes');
+
+        const taxes = parseFloat(taxesSlider.value);
+        const budgetAmount = (data.gdp * (100 - taxes)) / 100;
+        const povertyRateAfterTaxes = data.povertyRate + taxes * 0.7;
+
+        taxesPercent.textContent = `${taxes.toFixed(2)}%`;
+        budget.textContent = budgetAmount.toFixed(2);
+        povertyAfterTaxes.textContent = povertyRateAfterTaxes.toFixed(2);
+
+        data.budget = budgetAmount;
+        data.povertyRateAfterTaxes = povertyRateAfterTaxes;
+      }
+
+      // Function to calculate and update total expenditure
+      function calculateExpenditure() {
+        const departmentInputs = document.getElementsByClassName('department-input');
+        let totalExpenditure = 0;
+
+        for (let i = 0; i < departmentInputs.length; i++) {
+          const departmentInput = departmentInputs[i];
+          const department = departmentInput.id.replace('-input', '');
+          const expenditure = parseFloat(departmentInput.value);
+          totalExpenditure += expenditure;
+
+          data.expenditure[department] = expenditure;
+        }
+
+        document.getElementById('total-expenditure').textContent = totalExpenditure.toFixed(2);
+
+        data.totalExpenditure = totalExpenditure;
+      }
+
+      // Function to update the interest rate
+      function updateInterestRate() {
+        const interestRateElement = document.getElementById('interest-rate');
+        interestRateElement.textContent = data.interestRate.toFixed(2);
+      }
+
+      // Function to raise interest rates
+      function raiseInterestRates() {
+        data.interestRate += 0.45;
+        if (data.interestRate < 0.1) {
+          data.interestRate = 0.1;
+          alert('Interest rate cannot go below 0.1%');
+        } else {
+          data.gdp += 0.1;
+          data.perCapitaIncome -= 500;
+          data.unemploymentRate -= 0.2;
+          data.povertyRate += 0.1;
+          data.inflationRate -= 0.45;
+        }
+
+        updateDataValues();
+        updateInterestRate();
+      }
+
+      // Function to lower interest rates
+      function lowerInterestRates() {
+        data.interestRate -= 0.45;
+        if (data.interestRate < 0.1) {
+          data.interestRate = 0.1;
+          alert('Interest rate cannot go below 0.1%');
+        } else {
+          data.gdp -= 0.1;
+          data.perCapitaIncome += 500;
+          data.unemploymentRate += 0.2;
+          data.povertyRate -= 0.05;
+          data.inflationRate += 0.45;
+        }
+
+        updateDataValues();
+        updateInterestRate();
+      }
+
+      // Event listener for the taxes slider
+      document.getElementById('taxes-slider').addEventListener('input', () => {
+        const taxesPercent = document.getElementById('taxes-percent');
+        taxesPercent.textContent = `${parseFloat(document.getElementById('taxes-slider').value).toFixed(2)}%`;
+
+        updateBudget();
+      });
+
+      // Event listener for the calculate expenditure button
+      document.getElementById('calculate-expenditure').addEventListener('click', () => {
+        calculateExpenditure();
+      });
+
+      // Event listener for the raise interest rates button
+      document.getElementById('raise-interest-rate').addEventListener('click', () => {
+        raiseInterestRates();
+      });
+
+      // Event listener for the lower interest rates button
+      document.getElementById('lower-interest-rate').addEventListener('click', () => {
+        lowerInterestRates();
+      });
+
+      // Event listener for the health and human services expenditure slider
+      document.getElementById('health-input').addEventListener('input', () => {
+        const healthSlider = document.getElementById('health-input');
+        const healthExpenditure = document.getElementById('health-expenditure');
+
+        const expenditure = parseFloat(healthSlider.value) * 1000;
+        healthExpenditure.textContent = expenditure.toFixed(2);
+
+        data.expenditure.health = expenditure;
+      });
+
+      // Initial data update
+      updateDataValues();
+      updateBudget();
+      updateInterestRate();
+    });
+  </script>
+</body>
+</html>
