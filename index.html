@@ -173,9 +173,9 @@
       // Function to raise interest rates
       function raiseInterestRates() {
         data.interestRate += 0.45;
-        if (data.interestRate < 0.1) {
-          data.interestRate = 0.1;
-          alert('Interest rate cannot go below 0.1%');
+        if (data.inflationRate < 0.1) {
+          data.inflationRate = 0.1;
+          alert('Inflation rate cannot go below 0.1%');
         } else {
           data.gdp += 0.1;
           data.perCapitaIncome -= 500;
