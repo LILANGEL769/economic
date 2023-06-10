@@ -43,7 +43,7 @@
   <h1>Economic Simulator</h1>
 
   <div class="data-container">
-    <h2>GDP: <span id="gdp"></span> billion</h2>
+    <h2>GDP: <span id="gdp"></span> trillion</h2>
     <h2>Per Capita Income: $<span id="per-capita-income"></span></h2>
     <h2>Unemployment Rate: <span id="unemployment-rate"></span>%</h2>
     <h2>Poverty Rate: <span id="poverty-rate"></span>%</h2>
@@ -57,7 +57,7 @@
   </div>
 
   <div class="budget-container">
-    <h2>Budget: $<span id="budget"></span> trillion</h2>
+    <h2>Budget: $<span id="budget">0</span> trillion</h2>
     <h2>Poverty Rate After Taxes: <span id="poverty-after-taxes"></span>%</h2>
   </div>
 
@@ -134,7 +134,7 @@
         const povertyAfterTaxes = document.getElementById('poverty-after-taxes');
 
         const taxes = parseFloat(taxesSlider.value);
-        const budgetAmount = (data.gdp * (100 - taxes)) / 100;
+		const budgetAmount = (data.gdp * taxes) / 100;
         const povertyRateAfterTaxes = data.povertyRate + taxes * 0.7;
 
         taxesPercent.textContent = `${taxes.toFixed(2)}%`;
@@ -234,10 +234,10 @@
         const healthSlider = document.getElementById('health-input');
         const healthExpenditure = document.getElementById('health-expenditure');
 
-        const expenditure = parseFloat(healthSlider.value) * 1000;
-        healthExpenditure.textContent = expenditure.toFixed(2);
+        const healthBudget = parseFloat(healthSlider.value) * 0.01 * data.budget;
+        healthExpenditure.textContent = healthBudget.toFixed(2);
 
-        data.expenditure.health = expenditure;
+        data.expenditure.health = healthBudget;
       });
 
       // Initial data update
